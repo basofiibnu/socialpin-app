@@ -11,16 +11,15 @@ import Sidebar from '../components/Sidebar';
 import UserProfile from '../components/UserProfile';
 import Pins from './Pins';
 
+import { fetchUser } from '../utils/fetchUser';
+
 const Home = () => {
   const [user, setUser] = useState([]);
   const [toggleSidebar, setToggleSidebar] = useState(false);
 
   const scrollRef = useRef(null);
 
-  const userInfo =
-    localStorage.getItem('user') !== 'undefined'
-      ? JSON.parse(localStorage.getItem('user'))
-      : localStorage.clear();
+  const userInfo = fetchUser();
 
   useEffect(() => {
     const query = userQuery(userInfo?.googleId);
