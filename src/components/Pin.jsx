@@ -106,8 +106,8 @@ const Pin = ({
                 >
                   <BsFillArrowDownCircleFill />
                   {destination.length > 20
-                    ? destination.slice(8, 20)
-                    : destination.slice(8)}
+                    ? `${destination.slice(8, 20)}...`
+                    : `${destination.slice(8)}...`}
                 </a>
               )}
               {postedBy?._id === userInfo.googleId && (
