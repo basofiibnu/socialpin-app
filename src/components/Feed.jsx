@@ -32,8 +32,6 @@ const Feed = () => {
     return <Spinner message="We are adding new ideas to your feed" />;
   }
 
-  console.log(pins);
-
   return (
     <Fragment>
       <div>{pins && <MasonryLayout pins={pins} />}</div>

@@ -102,6 +102,7 @@ const Pin = ({
                   target="_blank"
                   rel="noreferrer"
                   className="bg-white flex items-center gap-2 text-black font-bold p-2 pl-4 pr-4 rounded-full opacity-70 hover:opacity-100 hover:shadow-md text-xs"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <BsFillArrowDownCircleFill />
                   {destination.length > 20
@@ -130,11 +131,11 @@ const Pin = ({
         className="flex gap-2 mt-2 items-center"
       >
         <img
-          className="w-8 h-8 rounded-full object-cover"
+          className="w-5 h-5 rounded-full object-cover"
           src={postedBy?.image}
           alt="user-profile"
         />
-        <p className="font-semibold capitalize">
+        <p className="font-semibold capitalize text-sm">
           {postedBy?.userName}
         </p>
       </Link>
