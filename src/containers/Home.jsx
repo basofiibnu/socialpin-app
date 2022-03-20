@@ -69,7 +69,7 @@ const Home = () => {
         )}
       </div>
       <div
-        className="pb-2 flex-3 h-screen overflow-y-scroll"
+        className="pb-2 flex-1 h-screen w-100 overflow-y-scroll"
         ref={scrollRef}
       >
         <Routes>
