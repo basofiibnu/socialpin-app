@@ -22,8 +22,8 @@ const notActiveBtnStyles =
 const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [pins, setPins] = useState(null);
-  const [text, setText] = useState('saved');
-  const [activeBtn, setActiveBtn] = useState('saved');
+  const [text, setText] = useState('Created');
+  const [activeBtn, setActiveBtn] = useState('Created');
 
   const navigate = useNavigate();
   const { userId } = useParams();
@@ -105,10 +105,10 @@ const UserProfile = () => {
               type="button"
               onClick={(e) => {
                 setText(e.target.textContent);
-                setActiveBtn('created');
+                setActiveBtn('Created');
               }}
               className={`${
-                activeBtn === 'created'
+                activeBtn === 'Created'
                   ? activeBtnStyles
                   : notActiveBtnStyles
               }`}
@@ -119,10 +119,10 @@ const UserProfile = () => {
               type="button"
               onClick={(e) => {
                 setText(e.target.textContent);
-                setActiveBtn('saved');
+                setActiveBtn('Saved');
               }}
               className={`${
-                activeBtn === 'saved'
+                activeBtn === 'Saved'
                   ? activeBtnStyles
                   : notActiveBtnStyles
               }`}
