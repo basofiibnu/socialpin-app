@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { HiMenu } from 'react-icons/hi';
 import { AiFillCloseCircle } from 'react-icons/ai';
-import { Link, Route, Routes } from 'react-router-dom';
+import { Link, Route, Routes, Navigate } from 'react-router-dom';
 
 import { client } from '../client';
 import { userQuery } from '../utils/data';
@@ -15,6 +15,7 @@ import { fetchUser } from '../utils/fetchUser';
 
 const Home = () => {
   const [user, setUser] = useState([]);
+  const [shouldRedirect, setshouldRedirect] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(false);
 
   const scrollRef = useRef(null);
@@ -22,15 +23,23 @@ const Home = () => {
   const userInfo = fetchUser();
 
   useEffect(() => {
-    const query = userQuery(userInfo?.googleId);
-    client.fetch(query).then((data) => {
-      setUser(data[0]);
-    });
+    if (userInfo) {
+      const query = userQuery(userInfo?.googleId);
+      client.fetch(query).then((data) => {
+        setUser(data[0]);
+      });
+    } else {
+      setshouldRedirect(true);
+    }
   }, []);
 
   useEffect(() => {
     scrollRef.current.scrollTo(0, 0);
   }, []);
+
+  if (shouldRedirect) {
+    return <Navigate replace to="/login" />;
+  }
 
   return (
     <div className="flex bg-gray-50 md:flex-row flex-col h-screen transition-height duration-75 ease-out">
