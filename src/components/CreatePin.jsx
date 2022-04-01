@@ -63,7 +63,7 @@ const CreatePin = ({ user }) => {
       category
     ) {
       const doc = {
-        _type: 'pin',
+        _type: 'pins',
         title,
         about,
         destination,
@@ -203,14 +203,14 @@ const CreatePin = ({ user }) => {
               onChange={(e) => {
                 setCategory(e.target.value);
               }}
-              className="outline-none w-full text-base border-b-2 border-gray-200 p-2 rounded-md cursor-pointer"
+              className="outline-none w-full text-base border-b-2 capitalize border-gray-200 p-2 rounded-md cursor-pointer"
             >
               <option value="other" className="bg-white">
                 Select Category
               </option>
               {categories.map((item) => (
                 <option
-                  className="text-base border-0 outline-none capitalize bg-white text-black"
+                  className="text-base border-0 outline-none bg-white text-black"
                   key={item.name}
                 >
                   {item.name}

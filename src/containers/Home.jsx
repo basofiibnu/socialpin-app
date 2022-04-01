@@ -38,7 +38,7 @@ const Home = () => {
         <Sidebar user={user && user} />
       </div>
       <div className="flex md:hidden flex-row">
-        <div className="p-2 w-full flex flex-row justify-between item-center shadow-empty">
+        <div className="p-2 w-full flex flex-row justify-between items-center shadow-empty">
           <HiMenu
             fontSize={40}
             className="cursor-pointer"
@@ -48,7 +48,11 @@ const Home = () => {
             <img src={logo} alt="logo" className="w-28" />
           </Link>
           <Link to={`user-profile/${user?._id}`}>
-            <img src={user?.image} alt="logo" className="w-28" />
+            <img
+              src={user?.image}
+              alt="logo"
+              className="w-10 rounded-full"
+            />
           </Link>
         </div>
         {toggleSidebar && (

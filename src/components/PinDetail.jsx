@@ -14,14 +14,14 @@ const PinDetail = ({ user }) => {
   const [comment, setComment] = useState('');
   const [addingComment, setAddingComment] = useState(false);
   const { pinId } = useParams();
+  const [loading, setLoading] = useState(false);
 
-  console.log(pins);
-
-  const fetchPinDetails = () => {
+  const fetchPinDetails = async () => {
+    setLoading(true);
     let query = pinDetailQuery(pinId);
 
     if (query) {
-      client.fetch(query).then((data) => {
+      await client.fetch(query).then((data) => {
         setPinDetail(data[0]);
 
         if (data[0]) {
@@ -31,20 +31,21 @@ const PinDetail = ({ user }) => {
         }
       });
     }
+    setLoading(false);
   };
 
-  const addComment = () => {
+  const addComment = async () => {
     if (comment) {
       setAddingComment(true);
     }
 
-    client
+    await client
       .patch(pinId)
       .setIfMissing({ comments: [] })
       .insert('after', 'comments[-1]', [
         {
           comment,
-          key: uuidv4,
+          _key: uuidv4(),
           postedBy: {
             _type: 'postedBy',
             _ref: user._id,
@@ -53,8 +54,8 @@ const PinDetail = ({ user }) => {
       ])
       .commit()
       .then(() => {
-        fetchPinDetails();
         setComment('');
+        fetchPinDetails();
         setAddingComment(false);
       });
   };
@@ -64,7 +65,6 @@ const PinDetail = ({ user }) => {
   }, [pinId]);
 
   if (!pinDetail) return <Spinner message={'Loading pin...'} />;
-
   return (
     <Fragment>
       <div
@@ -95,7 +95,9 @@ const PinDetail = ({ user }) => {
               target="_blank"
               rel="noreferrer"
             >
-              {pinDetail.destination.slice(0, 30)}
+              <div className="rounded-full bg-gray-100 py-1 px-3 text-sm text-gray-500">
+                {pinDetail.destination.slice(0, 30)}...
+              </div>
             </a>
           </div>
           <div>
@@ -117,64 +119,73 @@ const PinDetail = ({ user }) => {
               {pinDetail.postedBy.userName}
             </p>
           </Link>
-          {pinDetail?.comments && (
+          {addingComment ? (
+            <div className="mt-5 mb-5">
+              <Spinner message={'Posting your comment...'} />
+            </div>
+          ) : (
             <Fragment>
-              <h2 className="mt-5 text-2xl">Comments</h2>
-              <div className="max-h-370 overflow-y-auto">
-                {pinDetail?.comments?.map((commentItem, i) => (
-                  <div
-                    className="flex gap-2 mt-4 items-center bg-white rounded-lg"
-                    key={i}
-                  >
-                    <img
-                      src={commentItem.postedBy.image}
-                      alt="user-profile"
-                      className="w-10 h-10 rounded-full cursor-pointer"
-                    />
-                    <div className="flex flex-col">
-                      <p className="font-bold">
-                        {commentItem.postedBy.userName}
-                      </p>
-                      <p>{commentItem.comment}</p>
-                    </div>
+              {pinDetail?.comments && (
+                <Fragment>
+                  <h2 className="mt-5 text-2xl">Comments</h2>
+                  <div className="max-h-370 overflow-y-auto">
+                    {pinDetail?.comments?.map((commentItem, i) => (
+                      <div
+                        className="flex gap-2 mt-4 items-center bg-white rounded-lg"
+                        key={i}
+                      >
+                        <img
+                          src={commentItem.postedBy.image}
+                          alt="user-profile"
+                          className="w-10 h-10 rounded-full cursor-pointer"
+                        />
+                        <div className="flex flex-col">
+                          <p className="font-bold">
+                            {commentItem.postedBy.userName}
+                          </p>
+                          <p>{commentItem.comment}</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </Fragment>
+              )}
+              <div className="flex flex-wrap mt-6 gap-3">
+                <Link to={`user-profile/${pinDetail.postedBy._id}`}>
+                  <img
+                    className="w-10 h-10 rounded-full cursor-pointer"
+                    src={pinDetail.postedBy.image}
+                    alt="user-profile"
+                  />
+                </Link>
+                <input
+                  className="flex-1 border-gray-100 outline-none border-2 p-2 rounded-2xl focus:border-gray-300"
+                  type="text"
+                  placeholder="Add a comment"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="bg-red-500 text-white rounded-full px-6 py-2 font-semibold text-base outline-none"
+                  onClick={addComment}
+                >
+                  {addingComment ? 'Posting the comment...' : 'Post'}
+                </button>
               </div>
             </Fragment>
           )}
-          <div className="flex flex-wrap mt-6 gap-3">
-            <Link to={`user-profile/${pinDetail.postedBy._id}`}>
-              <img
-                className="w-10 h-10 rounded-full cursor-pointer"
-                src={pinDetail.postedBy.image}
-                alt="user-profile"
-              />
-            </Link>
-            <input
-              className="flex-1 border-gray-100 outline-none border-2 p-2 rounded-2xl focus:border-gray-300"
-              type="text"
-              placeholder="Add a comment"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-            <button
-              type="button"
-              className="bg-red-500 text-white rounded-full px-6 py-2 font-semibold text-base outline-none"
-              onClick={addComment}
-            >
-              {addingComment ? 'Posting the comment...' : 'Post'}
-            </button>
-          </div>
         </div>
       </div>
-      {pins?.length > 0 ? (
+      {!loading && pins?.length > 0 && (
         <Fragment>
           <h2 className="text-center font-bold text-2xl mt-8 mb-4">
             More like this
           </h2>
           <MasonryLayout pins={pins} />
         </Fragment>
-      ) : (
+      )}
+      {loading && (
         <div className="mt-5 mb-5">
           <Spinner message={'Loading more pins...'} />
         </div>
